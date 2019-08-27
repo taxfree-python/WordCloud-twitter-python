@@ -64,7 +64,7 @@ def counter(texts):
     for text in texts:
         tokens = t.tokenize(text)
         for token in tokens:
-            #名詞抽出
+            #Noun extraction
             pos = token.part_of_speech.split(',')[0]
             if pos in ['名詞']:
                 if token.base_form not in ['こと','よう','そう','RT','それ','これ','ツイート','リプライ','とき','ところ','さん','もの','ため','twitter','nizato','aka']:
