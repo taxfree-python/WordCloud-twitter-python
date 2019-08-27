@@ -67,7 +67,7 @@ def counter(texts):
             #Noun extraction
             pos = token.part_of_speech.split(',')[0]
             if pos in ['名詞']:
-                if token.base_form not in ['こと','よう','そう','RT','それ','これ','ツイート','リプライ','とき','ところ','さん','もの','ため','twitter','nizato','aka']:
+                if token.base_form not in ['こと','よう','そう','RT','それ','これ','ツイート','リプライ','とき','ところ','さん','もの','ため','twitter']:
                     words_count[token.base_form] += 1
                     words.append(token.base_form)
     return words_count, words
