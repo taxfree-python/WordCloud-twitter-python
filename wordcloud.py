@@ -12,34 +12,34 @@ import sys
 from PIL import Image
 #import numpy as np
 
-#user Authentication
+#認証
 CK = CONFIG.CONSUMER_KEY
 CS = CONFIG.CONSUMER_SECRET
 AT = CONFIG.ACCESS_TOKEN
 ATS = CONFIG.ACCESS_TOKEN_SECRET
 twitter = OAuth1Session(CK,CS,AT,ATS)
 
-#settiongs
+#parameter-required
 args = sys.argv
-print('user_id= ' + args[1])
-print('file_name= ' + args[2])
-print('picture_name= ' + args[3])
-#print('mask_path=' + args[4])
+print('screen name = ' + args[1])
+print('file name = ' + args[2])
+print('picture name = ' + args[3])
 csv_path = args[2] + '.csv'
+#mask_path = ('mask_path = ' + args[4])
 
 url = 'https://api.twitter.com/1.1/statuses/user_timeline.json'
 
-params = {'user_id':args[1],'exclude_replies':True,'include_rts':False,'count':200}
+params = {'screen_name':args[1],'exclude_replies':False,'include_rts':True,'count':200}
 
 f_out = open(csv_path,'w')
 
 #twitter API part
 for j in range(100):
     res = twitter.get(url, params = params)
-    
+
     if res.status_code == 200:
-        
-        #count API 
+
+        #count API
         limit = res.headers['x-rate-limit-remaining']
         print("API remain: " + limit)
         if limit == 1:
@@ -47,7 +47,6 @@ for j in range(100):
 
         n = 0
         timeline = json.loads(res.text)
-        
         for i in range(len(timeline)):
             if i != len(timeline)-1:
                 f_out.write(timeline[i]['text'] + '\n')
@@ -56,8 +55,8 @@ for j in range(100):
 
                 params['max_id'] = timeline[i]['id']-1
 f_out.close()
-            
-#japanese Morphological analysis
+
+#形態素解析 janome
 def counter(texts):
     t = Tokenizer()
     words_count = defaultdict(int)
@@ -68,7 +67,7 @@ def counter(texts):
             #名詞抽出
             pos = token.part_of_speech.split(',')[0]
             if pos in ['名詞']:
-                if token.base_form not in ['こと','よう','そう','RT','それ','これ','ツイート','リプライ','とき','ところ','さん','もの','ため','twitter']:
+                if token.base_form not in ['こと','よう','そう','RT','それ','これ','ツイート','リプライ','とき','ところ','さん','もの','ため','twitter','nizato','aka']:
                     words_count[token.base_form] += 1
                     words.append(token.base_form)
     return words_count, words
@@ -78,7 +77,7 @@ with open(csv_path,'r') as f:
     texts = []
     for row in reader:
         if(len(row) > 0):
-        
+
             text = row[0].split('http')
             texts.append(text[0])
 
@@ -87,8 +86,8 @@ text = ' '.join(words)
 
 #wordcloud
 fpath = 'fonts/ipagp.ttf'
-#mask = np.array(Image.open(args[4]))
-wordcloud = WordCloud(background_color="white",font_path=fpath, width=1000, height=700,contour_width=1, contour_color='steelblue')
+#mask = np.array(Image.open(mask_path))
+wordcloud = WordCloud(background_color="black",font_path=fpath, width=1000, height=700,contour_width=1, contour_color='steelblue')
 wordcloud.generate(text)
 
 #save picture
