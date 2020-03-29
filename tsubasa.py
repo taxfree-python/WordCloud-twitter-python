@@ -24,10 +24,11 @@ csv_path = args[1] + '.csv'
 url = 'https://api.twitter.com/1.1/search/tweets.json'
 
 keyword = '#数理の翼Nセミナー'
-params = {'q':keyword, 'count' : 100,'result_type':'recent'}
+params = {'q':keyword, 'count' : 100}
+
 with open(csv_path,'w') as f:
     #twitter API part
-    for j in range(1):
+    for j in range(10):
         res = twitter.get(url, params = params)
         if res.status_code == 200:
             n = 0
@@ -36,8 +37,9 @@ with open(csv_path,'w') as f:
                 if twit['text'] not in 'RT':
                     f.write(twit['text'])
                     print(twit['text'])
-            print(len(timeline))
+print('please waiting')
 
+ban_list = ['こと','よう','そう','RT','それ','これ','ツイート','リプライ','とき','ところ','さん','もの','ため','twitter','#数理の翼Nセミナー']
 def counter(texts):
     t = Tokenizer()
     words_count = defaultdict(int)
@@ -48,7 +50,7 @@ def counter(texts):
             #名詞抽出
             pos = token.part_of_speech.split(',')[0]
             if pos in ['名詞']:
-                if token.base_form not in ['こと','よう','そう','RT','それ','これ','ツイート','リプライ','とき','ところ','さん','もの','ため','twitter']:
+                if token.base_form not in ban_list:
                     words_count[token.base_form] += 1
                     words.append(token.base_form)
     return words_count, words
@@ -71,7 +73,7 @@ wordcloud = WordCloud(background_color="white",font_path=fpath, width=1000, heig
 wordcloud.generate(text)
 
 #save picture
-picture_path = 'picture/' + args[3] + '.png'
+picture_path = 'picture/' + args[2] + '.png'
 wordcloud.to_file(picture_path)
 
 #cd csv_file
